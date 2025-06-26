@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ビジュアルアイデンティティ策定プロジェクト - Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: #f5f5f5;
+        }
+        
+        /* ヘッダー */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #e0e0e0;
+            z-index: 1000;
+            padding: 20px 0;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .project-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #666;
+        }
+        
+        /* ナビゲーション */
+        .nav {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+        
+        .nav a {
+            text-decoration: none;
+            color: #666;
+            font-size: 14px;
+            transition: color 0.3s;
+            position: relative;
+        }
+        
+        .nav a:hover,
+        .nav a.active {
+            color: #000;
+        }
+        
+        .nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #000;
+        }
+        
+        /* メインコンテンツ */
+        main {
+            margin-top: 80px;
+        }
+        
+        /* Overview セクション */
+        .overview-section {
+            background: white;
+            padding: 80px 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+        
+        .overview-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+        
+        .overview-content h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .overview-subtitle {
+            font-size: 20px;
+            color: #666;
+            margin-bottom: 40px;
+        }
+        
+        .overview-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .info-item {
+            padding: 15px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .info-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .info-value {
+            font-size: 16px;
+            font-weight: 500;
+            margin-top: 5px;
+        }
+        
+        .overview-image {
+            position: relative;
+            height: 500px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .overview-image-text {
+            color: white;
+            font-size: 24px;
+            font-weight: 300;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        /* 目次セクション */
+        .toc-section {
+            background: #fafafa;
+            padding: 80px 0;
+        }
+        
+        .toc-title {
+            font-size: 32px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .phase-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+        
+        .phase-card {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .phase-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-color: #667eea;
+        }
+        
+        .phase-number {
+            width: 60px;
+            height: 60px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0 auto 20px;
+        }
+        
+        .phase-name {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .phase-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        /* フェーズ詳細セクション */
+        .phase-detail {
+            background: white;
+            padding: 100px 0;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .phase-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+        
+        .phase-header h2 {
+            font-size: 40px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .phase-header .phase-subtitle {
+            font-size: 18px;
+            color: #666;
+        }
+        
+        /* ワークフロー */
+        .workflow {
+            margin-bottom: 80px;
+        }
+        
+        .workflow-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        
+        .workflow-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            padding: 0 20px;
+        }
+        
+        .workflow-steps::before {
+            content: '';
+            position: absolute;
+            top: 30px;
+            left: 120px;
+            right: 120px;
+            height: 2px;
+            background: #e0e0e0;
+            z-index: 0;
+        }
+        
+        .workflow-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .step-icon {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .step-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .step-desc {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* 成果物展示 */
+        .deliverables {
+            margin-bottom: 80px;
+        }
+        
+        .deliverables-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+        }
+        
+        .deliverable-item {
+            background: #fafafa;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .deliverable-preview {
+            height: 300px;
+            background: linear-gradient(45deg, #e0e0e0 25%, transparent 25%),
+                        linear-gradient(-45deg, #e0e0e0 25%, transparent 25%),
+                        linear-gradient(45deg, transparent 75%, #e0e0e0 75%),
+                        linear-gradient(-45deg, transparent 75%, #e0e0e0 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #999;
+        }
+        
+        .deliverable-info {
+            padding: 30px;
+        }
+        
+        .deliverable-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .deliverable-desc {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        /* 役割説明 */
+        .role-section {
+            background: #f5f5f5;
+            padding: 40px;
+            border-radius: 12px;
+            margin-bottom: 60px;
+        }
+        
+        .role-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .role-icon {
+            width: 40px;
+            height: 40px;
+            background: #667eea;
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .role-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .role-item {
+            display: flex;
+            gap: 15px;
+            align-items: start;
+        }
+        
+        .role-bullet {
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 50%;
+            margin-top: 8px;
+            flex-shrink: 0;
+        }
+        
+        /* 成果セクション */
+        .results-section {
+            background: white;
+            padding: 100px 0;
+        }
+        
+        .results-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+        
+        .results-header h2 {
+            font-size: 40px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 60px;
+            margin-bottom: 80px;
+        }
+        
+        .impact-item {
+            text-align: center;
+        }
+        
+        .impact-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+        }
+        
+        .impact-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        
+        .impact-desc {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.8;
+        }
+        
+        /* 納品物一覧 */
+        .final-deliverables {
+            background: #fafafa;
+            padding: 60px;
+            border-radius: 20px;
+        }
+        
+        .final-deliverables-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        
+        .deliverables-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+        
+        .deliverable-card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .deliverable-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+        }
+        
+        .deliverable-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        .deliverable-name {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .deliverable-items {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.8;
+        }
+        
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .overview-grid,
+            .phase-cards,
+            .deliverables-grid,
+            .role-list,
+            .impact-grid,
+            .deliverables-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .workflow-steps {
+                flex-direction: column;
+                gap: 40px;
+            }
+            
+            .workflow-steps::before {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header class="header">
+        <div class="header-content">
+            <div class="project-title">Visual Identity Project</div>
+            <nav class="nav">
+                <a href="#overview" class="active">Overview</a>
+                <a href="#phases">Phases</a>
+                <a href="#phase1">Research</a>
+                <a href="#phase2">Strategy</a>
+                <a href="#phase3">Design</a>
+                <a href="#results">Results</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Overview セクション -->
+        <section id="overview" class="overview-section">
+            <div class="container">
+                <div class="overview-grid">
+                    <div class="overview-content">
+                        <h1>ビジュアルアイデンティティ<br>策定プロジェクト</h1>
+                        <p class="overview-subtitle">セレンディップホールディングスビジュアルアイデンディティ策定</p>
+                        
+                        <div class="overview-info">
+                            <div class="info-item">
+                                <div class="info-label">Client</div>
+                                <div class="info-value">株式会社セレンディップホールディングス</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Duration</div>
+                                <div class="info-value">3ヶ月</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Role</div>
+                                <div class="info-value">デザイナー</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Team</div>
+                                <div class="info-value">デザインチーム5名</div>
+                            </div>
+                        </div>
+                        
+                        <div class="overview-description">
+                            <p>単なるスタイリングの依頼から、本質的な課題を発見。「セレンディップらしさ」を言語化し、ビジュアルアイデンディティを定義することで、ブランドの長期的価値を創造しました。</p>
+                        </div>
+                    </div>
+                    
+                    <div class="overview-image">
+                        <div class="overview-image-text">
+                            Visual Identity<br>
+                            System Design
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 目次（フェーズ分解）セクション -->
+        <section id="phases" class="toc-section">
+            <div class="container">
+                <h2 class="toc-title">Project Phases</h2>
+                
+                <div class="phase-cards">
+                    <div class="phase-card" onclick="location.href='#phase1'">
+                        <div class="phase-number">1</div>
+                        <div class="phase-name">Research & Analysis</div>
+                        <div class="phase-description">
+                            企業理念の深掘りから既存アプリケーションの分析まで、包括的なリサーチを実施
+                        </div>
+                    </div>
+                    
+                    <div class="phase-card" onclick="location.href='#phase2'">
+                        <div class="phase-number">2</div>
+                        <div class="phase-name">Strategy Development</div>
+                        <div class="phase-description">
+                            「セレンディップらしさ」を言語化し、プロダクト原則を策定
+                        </div>
+                    </div>
+                    
+                    <div class="phase-card" onclick="location.href='#phase3'">
+                        <div class="phase-number">3</div>
+                        <div class="phase-name">Design System</div>
+                        <div class="phase-description">
+                            具体的なデザインルールを定義
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Phase 1: Research & Analysis -->
+        <section id="phase1" class="phase-detail">
+            <div class="container">
+                <div class="phase-header">
+                    <h2>Phase 1: Research & Analysis</h2>
+                    <p class="phase-subtitle">深い理解から始まる本質的な価値の発見</p>
+                </div>
+
+                <!-- ワークフロー -->
+                <div class="workflow">
+                    <h3 class="workflow-title">Research Workflow</h3>
+                    <div class="workflow-steps">
+                        <div class="workflow-step">
+                            <div class="step-icon">📊</div>
+                            <div class="step-title">デスクトップリサーチ</div>
+                            <div class="step-desc">業界分析・競合調査</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="step-icon">🎯</div>
+                            <div class="step-title">ヒアリング</div>
+                            <div class="step-desc">プロジェクトオーナーへのインタビュー</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="step-icon">📱</div>
+                            <div class="step-title">アプリ分析</div>
+                            <div class="step-desc">2つのアプリケーションの詳細調査</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="step-icon">📝</div>
+                            <div class="step-title">インサイト抽出</div>
+                            <div class="step-desc">発見の統合と課題定義</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 役割説明 -->
+                <div class="role-section">
+                    <div class="role-title">
+                        <div class="role-icon">👤</div>
+                        私の役割と実行内容
+                    </div>
+                    <div class="role-list">
+                        <div class="role-item">
+                            <div class="role-bullet"></div>
+                            <div>リサーチ計画の立案</div>
+                        </div>
+                        <div class="role-item">
+                            <div class="role-bullet"></div>
+                            <div>インタビュー参加</div>
+                        </div>
+                        <div class="role-item">
+                            <div class="role-bullet"></div>
+                            <div>競合他社のVIベンチマーク分析</div>
+                        </div>
+                        <div class="role-item">
+                            <div class="role-bullet"></div>
+                            <div>調査結果の分析</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 成果物展示 -->
+                <div class="deliverables">
+                    <h3 class="workflow-title">Research Deliverables</h3>
+                    <div class="deliverables-grid">
+                        <div class="deliverable-item">
+                            <div class="deliverable-preview">
+                                競合分析マトリクス
+                            </div>
+                            <div class="deliverable-info">
+                                <div class="deliverable-title">競合VI分析レポート</div>
+                                <div class="deliverable-desc">
+                                    ～社の企業のビジュアルアイデンティティを分析。業界トレンドと差別化ポイントを明確化し、セレンディップ社の独自性を定義する基礎資料として活用。
+                                </div>
+                            </div>
+                        </div>
+                        
+                        
+                        <div class="deliverable-item">
+                            <div class="deliverable-preview">
+                                課題定義書
+                            </div>
+                            <div class="deliverable-info">
+                                <div class="deliverable-title">本質的課題の定義書</div>
+                                <div class="deliverable-desc">
+                                    表面的な「スタイリング」の要望から、「ブランドアイデンティティの欠如」という本質的課題を抽出。VI策定の必要性を論理的に説明する提案書。
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Phase 2: Strategy Development -->
+        <section id="phase2" class="phase-detail" style="background: #fafafa;">
+            <div class="container">
+                <div class="phase-header">
+                    <h2>Phase 2: Strategy Development</h2>
+                    <p class="phase-subtitle">「らしさ」を言語化し、共通認識を構築</p>
+                </div>
+
+                <!-- ワークフロー -->
+                <div class="workflow">
+                    <h3 class="workflow-title">Strategy Workflow</h3>
+                    <div class="workflow-steps">
+                        <div class="workflow-step">
+                            <div class="step-icon">💡</div>
+                            <div class="step-title">ワークショップ</div>
+                            <div class="step-desc">クロスファンクショナルな探求</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="step-icon">🔍</div>
+                            <div class="step-title">概念化</div>
+                            <div class="step-desc">「らしさ」の言語化</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="step-icon">📐</div>
+                            <div class="step-title">原則策定</div>
+                            <div class="step-desc">プロダクト原則の定義</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="step-icon">🤝</div>
+                            <div class="step-title">合意形成</div>
+                            <div class="step-desc">組織全体での共有</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 役割説明 -->
+                <div class="role-section">
+                    <div class="role-title">
+                        <div class="role-icon">👤</div>
+                        私の役割と実行内容
+                    </div>
+                    <div class="role-list">
+                        <div class="role-item">
+                            <div class="role-bullet"></div>
+                            <div>ブランド価値の概念化と言語化プロセスのリード</div>
+                        </div>
+                        <div class="role-item">
+                            <div class="role-bullet"></div>
+                            <div>プロダクト原則のドラフト作成と精緻化</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 成果物展示 -->
+                <div class="deliverables">
+                    <h3 class="workflow-title">Strategy Deliverables</h3>
+                    <div class="deliverables-grid">
+                        <div class="deliverable-item">
+                            <div class="deliverable-preview">
+                                ワークショップボード
+                            </div>
+                            <div class="deliverable-info">
+                                <div class="deliverable-title">ブレインストーミング成果物</div>
+                                <div class="deliverable-desc">
+                                    3回のワークショップで収集した200以上のアイデアを整理。「セレンディップらしさ」を構成する要素を、親和図法を用いて体系化。
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="deliverable-item">
+                            <div class="deliverable-preview">
+                                ブランドピラミッド
+                            </div>
+                            <div class="deliverable-info">
+                                <div class="deliverable-title">ブランド価値体系図</div>
+                                <div class="deliverable-desc">
+                                    企業理念から具体的な行動指針まで、ブランド価値を階層的に整理。各レベルでの「セレンディップらしさ」を明確に定義。
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="deliverable-item">
+                            <div class="deliverable-preview">
+                                プロダクト原則
+                            </div>
+                            <div class="deliverable-info">
+                                <div class="deliverable-title">プロダクト原則定義書</div>
+                                <div class="deliverable-desc">
+                                    2つのアプリケーションを貫く5つの原則を策定。
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="deliverable-item">
+                            <div class="deliverable-preview">
+                                承認プレゼン資料
+                            </div>
+                            <div class="deliverable-info">
+                                <div class="deliverable-title">顧客へのプレゼンテーション</div>
+                                <div class="deliverable-desc">
+                                    VI策定の戦略的価値を説明し、共通認識を構築。
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Phase 3: Design System -->
+        <section id="phase3" class="phase-detail">
+            <div class="container">
+                <div class="phase-header">
+                    <h2>Phase 3: Visual Identity Development</h2>
+                    <p class="phase-subtitle">原則の策定と具体的なデザインテーマへ展開</p>
+                </div>
+
+                <!-- ワークフロー -->
+                <div class="workflow">
+                    <h3 class="workflow-title">Design Development Workflow</h3>
+                    <div class="workflow-steps">
+                        <div class="workflow-step">
+                            <div class="step-icon">🎨</div>
+                            <div class="step-title">Universal principles</div>
+                            <div class="step-desc">プロダクト原則の視覚化</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="step-icon">🎯</div>
+                            <div class="step-title">Design principles</div>
+                            <div class="step-desc">デザイン原則の視覚化</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="step-icon">🧩</div>
+                            <div class="step-title">Design Theme</div>
+                            <div class="step-desc">デザインテーマの視覚化</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 役割説明 -->
+                <div class="role-section">
+                    <div class="role-title">
+                        <div class="role-icon">👤</div>
+                        私の役割と実行内容
+                    </div>
+                    <div class="role-list">
+                        <div class="role-item">
+                            <div class="role-bullet"></div>
+                            <div>プロダクト原則の提案とビジュアル化</div>
+                        </div>
+                        <div class="role-item">
+                            <div class="role-bullet"></div>
+                            <div>デザイン原則の提案とビジュアル化</div>
+                        </div>
+                        <div class="role-item">
+                            <div class="role-bullet"></div>
+                            <div>デザインテーマの提案とビジュアル化</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 成果物展示 -->
+                <div class="deliverables">
+                    <h3 class="workflow-title">Design Theme Deliverables</h3>
+                    <div class="deliverables-grid">
+
+                        <div class="deliverable-item">
+                            <div class="deliverable-preview">
+                                コンポーネント
+                            </div>
+                            <div class="deliverable-info">
+                                <div class="deliverable-title">HiConnexへの適用例</div>
+                                <div class="deliverable-desc">
+                                    ボタン、フォーム、カードなど、50以上の再利用可能なコンポーネント。各種状態と組み合わせパターンを網羅的に定義。
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="deliverable-item">
+                            <div class="deliverable-preview">
+                                実装サンプル
+                            </div>
+                            <div class="deliverable-info">
+                                <div class="deliverable-title">楽知への適用例</div>
+                                <div class="deliverable-desc">
+                                    2つのアプリケーションの主要画面をリデザイン。新しいVIがどのように実装されるかを具体的に示すプロトタイプ。
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section id="results" class="results-section">
+            <div class="container">
+                <div class="results-header">
+                    <h2>Project Results</h2>
+                    <p class="phase-subtitle">戦略的VIがもたらした組織的インパクト</p>
+                </div>
+
+                <!-- インパクト -->
+                <div class="impact-grid">
+                    <div class="impact-item">
+                        <div class="impact-icon">🎯</div>
+                        <div class="impact-title">ブランドアイデンティティの確立</div>
+                        <div class="impact-desc">
+                            暗黙知だった「セレンディップらしさ」を明文化。全社員が共通認識を持ち、一貫したブランド体験の提供が可能に。
+                        </div>
+                    </div>
+                    
+                    <div class="impact-item">
+                        <div class="impact-icon">🚀</div>
+                        <div class="impact-title">将来への拡張性</div>
+                        <div class="impact-desc">
+                            3つ目、4つ目のアプリケーション展開時も、一貫性を保ちながら迅速な開発が可能な基盤を構築。
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 最終納品物 -->
+                <div class="final-deliverables">
+                    <h3 class="final-deliverables-title">Final Deliverables</h3>
+                    
+                    <div class="deliverables-list">
+                        <div class="deliverable-card">
+                            <div class="deliverable-icon">📖</div>
+                            <div class="deliverable-name">VI策定書</div>
+                            <div class="deliverable-items">
+                                • ブランド理念とビジュアルの関係性<br>
+                                • デザイン原則の詳細解説<br>
+                                • 意思決定のフレームワーク
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // スムーズスクロール
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // アクティブナビゲーション
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav a');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= (sectionTop - 100)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').slice(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
