@@ -13,6 +13,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize drag scroll for project pages
     initializeDragScroll();
+    
+    // Initialize wheel scroll for project pages
+    initializeWheelScroll();
 });
 
 /**
@@ -235,9 +238,7 @@ function initializeDragScroll() {
         let startX;
         let scrollLeft;
         let animationId;
-        let velocity = 0;
-        let lastX = 0;
-        let lastTime = 0;
+        let velocityTracker = [];
         
         // Mouse down event
         page.addEventListener('mousedown', (e) => {
@@ -245,13 +246,12 @@ function initializeDragScroll() {
             page.classList.add('dragging');
             startX = e.pageX - page.offsetLeft;
             scrollLeft = page.scrollLeft;
-            lastX = e.pageX;
-            lastTime = Date.now();
-            velocity = 0;
+            velocityTracker = [];
             
             // Cancel any ongoing momentum scroll
             if (animationId) {
                 cancelAnimationFrame(animationId);
+                animationId = null;
             }
             
             // Prevent text selection during drag
@@ -282,20 +282,20 @@ function initializeDragScroll() {
             
             e.preventDefault();
             const x = e.pageX - page.offsetLeft;
-            const walk = (x - startX) * 1.5; // Adjust scroll speed multiplier
+            const walk = (x - startX) * 1.5;
             const newScrollLeft = scrollLeft - walk;
             
-            // Calculate velocity for momentum scroll
-            const currentTime = Date.now();
-            const deltaTime = currentTime - lastTime;
+            // Track velocity over the last few frames - track mouse movement, not scroll position
+            const now = Date.now();
+            velocityTracker.push({
+                time: now,
+                mouseX: x // Track mouse position instead of scroll position
+            });
             
-            if (deltaTime > 10) { // Only calculate if enough time has passed
-                const deltaScroll = page.scrollLeft - (scrollLeft - walk);
-                velocity = deltaScroll / deltaTime * 1000; // pixels per second
+            // Keep only the last 5 measurements for velocity calculation
+            if (velocityTracker.length > 5) {
+                velocityTracker.shift();
             }
-            
-            lastX = e.pageX;
-            lastTime = currentTime;
             
             page.scrollLeft = newScrollLeft;
         });
@@ -306,12 +306,11 @@ function initializeDragScroll() {
             page.classList.add('dragging');
             startX = e.touches[0].pageX - page.offsetLeft;
             scrollLeft = page.scrollLeft;
-            lastX = e.touches[0].pageX;
-            lastTime = Date.now();
-            velocity = 0;
+            velocityTracker = [];
             
             if (animationId) {
                 cancelAnimationFrame(animationId);
+                animationId = null;
             }
         });
         
@@ -328,51 +327,100 @@ function initializeDragScroll() {
             
             const x = e.touches[0].pageX - page.offsetLeft;
             const walk = (x - startX) * 1.5;
+            const newScrollLeft = scrollLeft - walk;
             
-            const currentTime = Date.now();
-            const deltaTime = currentTime - lastTime;
-            const deltaX = e.touches[0].pageX - lastX;
+            const now = Date.now();
+            velocityTracker.push({
+                time: now,
+                mouseX: x // Track touch position instead of scroll position
+            });
             
-            if (deltaTime > 0) {
-                velocity = deltaX / deltaTime * 16;
+            if (velocityTracker.length > 5) {
+                velocityTracker.shift();
             }
             
-            lastX = e.touches[0].pageX;
-            lastTime = currentTime;
-            
-            page.scrollLeft = scrollLeft - walk;
+            page.scrollLeft = newScrollLeft;
         });
         
         // Momentum scroll function
         function startMomentumScroll(element) {
-            const friction = 0.92;
-            const minVelocity = 10; // pixels per second
+            if (velocityTracker.length < 2) return;
+            
+            // Calculate velocity from the last few measurements
+            const recent = velocityTracker.slice(-3); // Use last 3 measurements for better accuracy
+            const oldest = recent[0];
+            const newest = recent[recent.length - 1];
+            
+            const timeDiff = newest.time - oldest.time;
+            const mouseDiff = newest.mouseX - oldest.mouseX; // Mouse movement difference
+            
+            if (timeDiff === 0) return;
+            
+            // Calculate velocity based on mouse movement direction
+            // Positive mouseDiff = moving right, should scroll left (decrease scrollLeft)
+            // Negative mouseDiff = moving left, should scroll right (increase scrollLeft)
+            let velocity = (mouseDiff / timeDiff) * 30; // Mouse velocity to scroll velocity
+            
+            // Only start momentum if velocity is significant
+            if (Math.abs(velocity) < 1) {
+                console.log('Velocity too low for momentum:', velocity);
+                return;
+            }
+            
+            console.log('Starting momentum scroll with velocity:', velocity);
+            
+            const friction = 0.90; // Smoother deceleration
+            const minVelocity = 0.3; // Lower minimum velocity for longer momentum
             
             function animate() {
                 velocity *= friction;
                 
                 if (Math.abs(velocity) < minVelocity) {
                     animationId = null;
+                    console.log('Momentum scroll ended');
                     return;
                 }
                 
-                // Convert velocity from pixels/second to pixels/frame (60fps)
-                const scrollDelta = velocity / 60;
-                element.scrollLeft -= scrollDelta;
-                
+                // Apply velocity in the direction of mouse movement
+                element.scrollLeft -= velocity;
                 animationId = requestAnimationFrame(animate);
             }
             
-            if (Math.abs(velocity) > minVelocity) {
-                console.log('Starting momentum scroll with velocity:', velocity);
-                animate();
-            } else {
-                console.log('Velocity too low for momentum:', velocity);
-            }
+            animate();
         }
     });
     
     console.log('Drag scroll functionality initialized');
+}
+
+/**
+ * Initialize wheel scroll functionality for project pages
+ */
+function initializeWheelScroll() {
+    const projectPages = document.querySelectorAll('.project-page');
+    
+    projectPages.forEach(page => {
+        page.addEventListener('wheel', (e) => {
+            // Only apply to project pages, not the home page
+            if (!page.classList.contains('active')) return;
+            
+            // Prevent default vertical scrolling
+            e.preventDefault();
+            
+            // Convert vertical scroll to horizontal scroll
+            const scrollAmount = e.deltaY * 2; // Multiply for smoother scrolling
+            page.scrollLeft += scrollAmount;
+            
+            // Add temporary class for visual feedback (optional)
+            page.classList.add('wheel-scrolling');
+            clearTimeout(page.wheelTimeout);
+            page.wheelTimeout = setTimeout(() => {
+                page.classList.remove('wheel-scrolling');
+            }, 150);
+        }, { passive: false }); // passive: false to allow preventDefault
+    });
+    
+    console.log('Wheel scroll functionality initialized');
 }
 
 // Debug information (remove in production)
