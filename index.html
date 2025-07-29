@@ -18,8 +18,30 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Header Component -->
-    <header class="header" id="header" data-name="Header">
+    <!-- Password overlay -->
+    <div id="password-overlay">
+        <div class="password-container">
+            <div class="password-icon">🔒</div>
+            <h2 class="password-title">Portfolio Access</h2>
+            <p class="password-subtitle">パスワードを入力してください</p>
+            <form onsubmit="checkPassword(event)">
+                <input 
+                    type="password" 
+                    id="password-input" 
+                    class="password-input" 
+                    placeholder="パスワード"
+                    autocomplete="off"
+                >
+                <button type="submit" class="password-submit">アクセス</button>
+            </form>
+            <p id="password-error" class="password-error">パスワードが正しくありません</p>
+        </div>
+    </div>
+
+    <!-- Main content wrapper -->
+    <div id="main-content">
+        <!-- Header Component -->
+        <header class="header" id="header" data-name="Header">
         <div class="header-content">
             <div class="logo-container">
                 <div class="logo" data-name="Logo">
@@ -88,8 +110,57 @@
                 </div>
             </div>
         </section>
-    </main>
+        </main>
+    </div>
 
     <script src="script.js"></script>
+    <script>
+        // Password protection logic
+        const CORRECT_PASSWORD = "202508";
+        const AUTH_KEY = "portfolio_auth";
+
+        // Initialize
+        window.onload = function() {
+            checkAuthentication();
+        };
+
+        // Check authentication status
+        function checkAuthentication() {
+            const isAuthenticated = sessionStorage.getItem(AUTH_KEY);
+            if (isAuthenticated === "true") {
+                showMainContent();
+            }
+        }
+
+        // Check password
+        function checkPassword(event) {
+            event.preventDefault();
+            
+            const inputPassword = document.getElementById('password-input').value;
+            const errorElement = document.getElementById('password-error');
+            
+            if (inputPassword === CORRECT_PASSWORD) {
+                // Authentication success
+                sessionStorage.setItem(AUTH_KEY, "true");
+                showMainContent();
+            } else {
+                // Authentication failed
+                errorElement.style.display = 'block';
+                document.getElementById('password-input').value = '';
+                
+                // Hide error message after 3 seconds
+                setTimeout(() => {
+                    errorElement.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        // Show main content
+        function showMainContent() {
+            document.getElementById('password-overlay').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+        }
+
+    </script>
 </body>
 </html>
